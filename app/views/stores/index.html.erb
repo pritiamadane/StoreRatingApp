@@ -1,0 +1,40 @@
+<h2>Stores</h2>
+
+<%= form_with(url: stores_path, method: :get, local: true) do |form| %>
+  <div>
+    <%= form.label :search, "Search Stores" %>
+    <%= form.text_field :search, value: params[:search] %>
+    <%= form.submit 'Search' %>
+  </div>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th><%= sort_link 'Name', 'name' %></th>
+      <th><%= sort_link 'Address', 'address' %></th>
+      <th>Overall Ratings</th>
+      <th>My Submitted Rating</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @stores.each do |store| %>
+      <tr>
+        <td><%= store.name %></td>
+        <td><%= store.address %></td>
+        <td><%= store.ratings.average(:score).to_f.round(2) %></td>
+        <td>
+          <% rating = current_user.ratings.find_by(store: store) %>
+          <% if rating %>
+            <%= rating.score %>
+            <%= link_to 'Edit Rating', edit_rating_path(rating) %>
+          <% else %>
+            <%= link_to 'Submit Rating', new_rating_path(store_id: store.id) %>
+          <% end %>
+        </td>
+        <td><%= link_to 'View', store_path(store) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
